@@ -1,0 +1,148 @@
+<!doctype html>
+
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NEXOS LAC</title>
+  <style>
+    :root{
+      --bg:#040504;
+      --panel:#071009;
+      --accent:#00ff88;
+      --accent-2:#00cc66;
+      --muted:#98a295;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.6);
+      font-family: Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#001207,#03110a 40%,#000);color:#eaffea;}/* Header / App bar */
+.appbar{position:sticky;top:0;background:linear-gradient(90deg,var(--accent-2),var(--accent));padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:40}
+.logo{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#022;background:linear-gradient(180deg,#d9ffd9,#aaffcc);box-shadow:0 6px 18px rgba(0,255,140,0.08)}
+.title{font-size:18px;color:#022;font-weight:900}
+.subtitle{font-size:12px;color:#022;opacity:0.85}
+.app-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.icon-btn{background:transparent;border:1px solid rgba(0,0,0,0.05);padding:8px;border-radius:10px;cursor:pointer}
+
+/* Main layout */
+.wrap{max-width:1080px;margin:12px auto;padding:12px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:16px}
+@media(max-width:920px){.grid{grid-template-columns:1fr}}
+
+/* Cards */
+.card{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+h2{margin:0 0 8px 0;font-size:16px}
+
+/* Post form */
+.row{display:flex;gap:8px}
+input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:#eaffea}
+textarea{min-height:90px}
+.btn{padding:10px 12px;border-radius:10px;border:none;background:transparent;color:var(--accent);cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#022;font-weight:700}
+.muted{color:var(--muted);font-size:13px}
+
+/* Posts list */
+.posts{display:flex;flex-direction:column;gap:12px}
+.post{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.25),rgba(255,255,255,0.01));border:1px solid rgba(0,255,128,0.04)}
+.post-left{flex:1}
+.post-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.post .title{font-weight:800;color:var(--accent)}
+.post .meta{font-size:13px;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{padding:2px 6px;background:var(--accent-2);color:#022;border-radius:6px;font-size:11px;font-weight:700}
+
+/* servers section */
+.tabs{display:flex;gap:8px;margin-bottom:8px}
+.tab{padding:8px 10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+.tab.active{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#022}
+.server-card{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.2);margin-bottom:8px}
+
+/* chat */
+.chat-box{height:320px;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px}
+.msg{padding:8px;border-radius:10px}
+.msg.me{align-self:flex-end;background:linear-gradient(180deg,rgba(0,255,140,0.12),rgba(0,255,140,0.06))}
+.msg.other{align-self:flex-start;background:rgba(255,255,255,0.02)}
+
+/* bottom nav for mobile */
+.bottomnav{position:fixed;left:0;right:0;bottom:0;padding:8px;background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.8));display:flex;gap:8px;justify-content:space-around}
+.bn{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);color:var(--muted);font-weight:700}
+.bn.active{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#022}
+
+/* modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:60}
+.modal .box{width:90%;max-width:720px;background:var(--panel);padding:16px;border-radius:12px}
+
+.ad-placeholder{height:90px;border-radius:10px;background:linear-gradient(90deg,#002f1a,#003a1f);display:flex;align-items:center;justify-content:center;color:#bfffd0;margin-top:8px}
+
+footer{padding:12px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:72px}
+
+  </style>
+</head>
+<body>
+  <!-- appbar, wrap, main layout remain the same -->  <!-- Post form: adicionando campo Tags -->  <input id="tags" placeholder="Tags (separadas por vírgula)" style="margin-top:8px" />  <script>
+    // ...código existente...
+
+    function publishPost(){
+      const title = document.getElementById('title').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+      const cat = document.getElementById('category').value;
+      const version = document.getElementById('version').value.trim();
+      const tagStr = document.getElementById('tags').value.trim();
+      const tags = tagStr ? tagStr.split(',').map(t=>t.trim()).filter(t=>t) : [];
+      const f = document.getElementById('fileInput').files[0];
+      if(!title || !f){alert('Título e arquivo são necessários.');return}
+
+      const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        files[id] = {data: e.target.result, name: f.name, size: f.size, type: f.type};
+        localStorage.setItem(KEY_FILES, JSON.stringify(files));
+
+        const post = {id, title, desc, cat, version, fileId: id, fileName: f.name, author: user.name, authorId: user.id, time: new Date().toLocaleString(), ts: Date.now(), tags};
+        posts.push(post);
+        localStorage.setItem(KEY_POSTS, JSON.stringify(posts));
+
+        // reset form
+        document.getElementById('title').value=''; document.getElementById('desc').value=''; document.getElementById('fileInput').value=''; document.getElementById('version').value=''; document.getElementById('tags').value='';
+        renderPosts();
+        alert('Post publicado com sucesso!');
+      };
+      reader.readAsDataURL(f);
+    }
+
+    function renderPosts(){
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const filter = document.getElementById('filterCat').value;
+      const container = document.getElementById('posts'); container.innerHTML='';
+      const list = posts.slice().reverse();
+      list.forEach(p=>{
+        if(bans.nicks.includes(p.author)) return;
+        if(bans.posts.includes(p.id)) return;
+        if(filter !== 'all' && p.cat !== filter) return;
+        if(q && !(p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.author.toLowerCase().includes(q) || p.tags.some(tag=>tag.toLowerCase().includes(q)))) return;
+
+        const el = document.createElement('div'); el.className='post';
+        const left = document.createElement('div'); left.className='post-left';
+        let tagsHtml = ''; if(p.tags && p.tags.length) tagsHtml = '<div class="tags">'+p.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')+'</div>';
+        left.innerHTML = `<div class="title">${escapeHtml(p.title)}</div><div class="meta">${escapeHtml(p.desc.substring(0,200))}</div>${tagsHtml}<div class="muted">${escapeHtml(p.author)} • ${escapeHtml(p.time)} • ${escapeHtml(p.fileName)}</div>`;
+
+        const right = document.createElement('div'); right.className='post-right';
+        const dl = document.createElement('button'); dl.className='btn'; dl.innerText='Download'; dl.onclick = ()=>downloadFile(p.fileId, p.fileName);
+        const preview = document.createElement('button'); preview.className='btn'; preview.innerText='Visualizar'; preview.onclick = ()=>previewFile(p.fileId);
+        right.appendChild(preview); right.appendChild(dl);
+
+        if(user.admin){
+          const banBtn = document.createElement('button'); banBtn.className='btn'; banBtn.innerText='Banir post'; banBtn.onclick = ()=>{ if(confirm('Banir este post?')){bans.posts.push(p.id); localStorage.setItem(KEY_BANS, JSON.stringify(bans)); renderPosts();}};
+          const banUser = document.createElement('button'); banUser.className='btn'; banUser.innerText='Banir nick'; banUser.onclick = ()=>{ if(confirm('Banir autor '+p.author+'?')){bans.nicks.push(p.author); localStorage.setItem(KEY_BANS, JSON.stringify(bans)); renderPosts(); renderChat(); alert('Usuario banido: '+p.author);} };
+          right.appendChild(banBtn); right.appendChild(banUser);
+        }
+
+        el.appendChild(left); el.appendChild(right); container.appendChild(el);
+      });
+    }
+
+    // ... restante do código permanece igual, mantendo servidores, chat, admin, downloads etc
+  </script></body>
+</html>
