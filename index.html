@@ -1,647 +1,398 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-<title>FOTBOLLL BR</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MapaHub LAC — Downloads</title>
 <style>
-  :root{
-    --bg:#0b5; --field:#0a3; --line:#fff; --panel: rgba(0,0,0,0.6);
-    --accent:#ffd700; --btn:#0b4; --text:#fff;
-  }
-  html,body{height:100%; margin:0; font-family: Inter, system-ui, Arial; background:linear-gradient(#062,#013); color:var(--text); -webkit-font-smoothing:antialiased;}
-  #app{display:flex; height:100vh; align-items:center; justify-content:center;}
-  canvas { background: linear-gradient(#093, #072); border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.6); display:block; touch-action:none; }
-  .overlay {
-    position: absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    pointer-events:none;
-  }
-  .panel {
-    pointer-events:auto;
-    background:var(--panel); padding:18px; border-radius:12px; min-width:320px; max-width:760px; text-align:center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-  }
-  h1{margin:6px 0 10px; font-size:28px; letter-spacing:1px;}
-  .muted{color:rgba(255,255,255,0.8); font-size:13px;}
-  .row{display:flex; gap:10px; justify-content:center; margin-top:10px; flex-wrap:wrap;}
-  .btn {
-    background:linear-gradient(180deg,#16a34a,#0b6); border:none; color:#012; font-weight:700; padding:10px 16px; border-radius:8px; cursor:pointer;
-    box-shadow:0 6px 14px rgba(0,0,0,0.45);
-  }
-  .btn.secondary { background:transparent; border:1px solid rgba(255,255,255,0.08); color:var(--text); box-shadow:none; padding:8px 12px; }
-  label { font-size:13px; display:flex; gap:8px; align-items:center; justify-content:center; }
-  select,input[type="range"]{margin-left:6px;}
-  .small{font-size:12px; opacity:0.9;}
-  #uiTop { position:fixed; left:12px; top:12px; color:#fff; font-weight:700; background:rgba(0,0,0,0.25); padding:8px 10px; border-radius:8px; }
-  #uiTopRight { position:fixed; right:12px; top:12px; background:rgba(0,0,0,0.25); padding:8px 10px; border-radius:8px; font-weight:700; }
-  #controlsHint { position:fixed; left:12px; bottom:12px; background:rgba(0,0,0,0.25); padding:8px 10px; border-radius:8px; font-size:13px; }
-  .mini { font-size:12px; opacity:0.9; }
-  .switch { display:inline-flex; align-items:center; gap:8px; }
-  input[type=checkbox]{transform:scale(1.1); margin-right:6px;}
-  footer{font-size:12px; color:rgba(255,255,255,0.75); margin-top:6px;}
-  /* responsive canvas container */
-  #container{position:relative; width:min(1100px, 96vw); height:calc(min(700px, 72vh)); display:flex; align-items:center; justify-content:center;}
-  @media (max-width:540px){
-    .panel{min-width:260px;}
-    canvas{border-radius:6px;}
-  }
+  :root{--bg:#0f1720;--card:#0b1220;--accent:#10b981;--muted:#9ca3af;--glass:rgba(255,255,255,0.03)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#071129,#0b1724);color:#e6eef6;-webkit-font-smoothing:antialiased}
+  header{display:flex;gap:12px;align-items:center;padding:18px;max-width:1200px;margin:18px auto}
+  h1{margin:0;font-size:20px}
+  .container{max-width:1200px;margin:0 auto;padding:0 16px 70px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .search{flex:1;min-width:180px}
+  input,select,button,textarea{font-family:inherit}
+  input[type=text],select,textarea{background:var(--card);border:1px solid rgba(255,255,255,0.04);color:inherit;padding:10px;border-radius:8px;outline:none}
+  button{background:var(--accent);border:none;color:#042018;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+  button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),var(--glass));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  .card h3{margin:0 0 6px 0;font-size:16px}
+  .meta{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tag{background:rgba(255,255,255,0.04);padding:6px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+  .card .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+  .download{background:#0ea5a3;color:#021; padding:8px 10px;border-radius:8px;font-weight:700}
+  footer{max-width:1200px;margin:20px auto;color:var(--muted);text-align:center;padding:20px 16px}
+  /* admin modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.6));z-index:999}
+  .modal .box{width:100%;max-width:760px;background:#071424;padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+  label{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+  textarea{min-height:80px}
+  .small{font-size:13px;color:var(--muted)}
+  .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .hint{font-size:13px;color:var(--muted);margin-left:8px}
+  .ads-space{margin:12px 0;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0.01));text-align:center;color:var(--muted)}
+  @media (max-width:640px){ header{padding:12px} .controls{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
-<div id="app">
-  <div id="container">
-    <canvas id="game" width="1100" height="700"></canvas>
 
-    <!-- Overlays (menus / panels) -->
-    <div class="overlay" id="menuOverlay">
-      <div class="panel" id="mainMenu">
-        <h1>FOTBOLLL BR</h1>
-        <div class="muted">Jogo de futebol 2D — controle o jogador azul. Toque/teclado funcionam.</div>
-        <div class="row" style="margin-top:14px;">
-          <button class="btn" id="startBtn">COMEÇAR PARTIDA</button>
-          <button class="btn secondary" id="settingsBtn">CONFIGURAÇÕES</button>
-          <button class="btn secondary" id="howBtn">COMO JOGAR</button>
-        </div>
-        <footer class="small">Feito com ♥ — cole esse arquivo no WebCode e rode.</footer>
-      </div>
+<header>
+  <div>
+    <h1>MapaHub LAC</h1>
+    <div class="small">Central de downloads de mapas — cole o link do MediaFire e compartilhe.</div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <button id="openAdmin">Admin (local)</button>
+    <button class="secondary" id="exportBtn">Exportar JSON</button>
+    <button class="secondary" id="importBtn">Importar JSON</button>
+  </div>
+</header>
 
-      <div class="panel" id="settingsPanel" style="display:none;">
-        <h1>CONFIGURAÇÕES</h1>
-        <div class="row">
-          <label>Controle:
-            <select id="controlSelect">
-              <option value="wasd">WASD</option>
-              <option value="arrows">Setas</option>
-              <option value="touch">Touch (mobile)</option>
-            </select>
-          </label>
-          <label>Dificuldade:
-            <select id="difficultySelect">
-              <option value="easy">FÁCIL</option>
-              <option value="normal" selected>NORMAL</option>
-              <option value="hard">DIFÍCIL</option>
-            </select>
-          </label>
-        </div>
-        <div class="row" style="margin-top:8px;">
-          <label>Tempo de partida (min): 
-            <select id="matchTime">
-              <option>1</option><option selected>3</option><option>5</option><option>8</option>
-            </select>
-          </label>
-          <label class="switch"><input type="checkbox" id="soundToggle" checked> Sons</label>
-        </div>
-        <div class="row" style="margin-top:12px;">
-          <button class="btn" id="applySettings">APLICAR E VOLTAR</button>
-          <button class="btn secondary" id="backFromSettings">VOLTAR</button>
-        </div>
-      </div>
+<div class="container">
+  <!-- espaço para anúncios (cole aqui o script do AdSense ou outro) -->
+  <div class="ads-space" id="adTop">
+    <!-- COLE AQUI O CÓDIGO DO SEU AD (ex: AdSense) -->
+    <div class="small">Espaço para anúncio — cole o script do AdSense ou outro aqui.</div>
+  </div>
 
-      <div class="panel" id="howPanel" style="display:none;">
-        <h1>COMO JOGAR</h1>
-        <div class="muted" style="text-align:left; margin:8px 0;">
-          • Controle o jogador azul. Segure para correr. Toque na bola para chutar.<br>
-          • No teclado: movimento com WASD ou Setas; ESPAÇO para chutar; SHIFT para correr.<br>
-          • Toque: toque o lado esquerdo para mover, toque a bola para chutar. Use o botão de pausa no HUD.<br>
-          • Marque gols antes do adversário. Tempo limitado por partida.
-        </div>
-        <div class="row">
-          <button class="btn" id="howBack">ENTENDI</button>
-        </div>
+  <div class="controls">
+    <input type="text" id="searchInput" class="search" placeholder="Buscar por nome, tags ou autor...">
+    <select id="filterTag">
+      <option value="">Filtrar por tag</option>
+    </select>
+    <select id="sortBy">
+      <option value="new">Mais recentes</option>
+      <option value="name">Nome A→Z</option>
+      <option value="popular">Mais acessados (estimado)</option>
+    </select>
+    <button id="clearFilter" class="secondary">Limpar</button>
+  </div>
+
+  <div id="list" class="grid" aria-live="polite">
+    <!-- cards são renderizados por JS -->
+  </div>
+
+  <div class="ads-space" id="adBottom">
+    <div class="small">Rodapé de anúncio — insira seu script de anúncios aqui.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="small">Use este site apenas para conteúdo que você tem direito de distribuir. Para monetizar com anúncios (AdSense), use domínio próprio e siga as políticas do provedor de anúncios.</div>
+</footer>
+
+<!-- Admin modal (localStorage) -->
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <div class="topbar">
+      <strong>Admin — Adicionar / Editar mapa</strong>
+      <div>
+        <button id="closeModal" class="secondary">Fechar</button>
       </div>
     </div>
 
-    <!-- HUD -->
-    <div id="uiTop">Time Azul <span id="scoreBlue">0</span> — <span id="scoreRed">0</span> Time Vermelho</div>
-    <div id="uiTopRight">Tempo: <span id="timeLeft">03:00</span></div>
-    <div id="controlsHint">PAUSAR: P • Reiniciar: R</div>
+    <label>Título</label>
+    <input type="text" id="mTitle" placeholder="Nome do mapa (ex: Centro da cidade)">
+
+    <label>Descrição</label>
+    <textarea id="mDesc" placeholder="Descrição curta"></textarea>
+
+    <label>Tags (separe por vírgula)</label>
+    <input type="text" id="mTags" placeholder="ex: cidade, rp, pvp">
+
+    <label>Link MediaFire</label>
+    <input type="text" id="mLink" placeholder="Cole o link do MediaFire aqui (começa com https://www.mediafire.com/...)">
+
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <button id="saveMap">Salvar</button>
+      <button id="deleteMap" class="secondary" style="display:none">Excluir</button>
+      <div class="hint">Você pode importar/exportar a lista com JSON.</div>
+    </div>
+
+    <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)">
+
+    <div class="small">Importar JSON:</div>
+    <textarea id="importArea" placeholder='Cole aqui JSON exportado (array de objetos)'></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="doImport" class="secondary">Importar agora (substitui lista)</button>
+      <button id="appendImport" class="secondary">Importar (adicionar)</button>
+    </div>
   </div>
 </div>
 
 <script>
 (() => {
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
+  // ---------- storage keys ----------
+  const STORAGE_KEY = 'mapahub_lac_v1';
 
-  // --- responsive scaling while keeping logical game resolution ---
-  const LOGICAL_W = 1100, LOGICAL_H = 700;
-  function fitCanvas(){
-    const rect = canvas.getBoundingClientRect();
-    const cssW = Math.min(window.innerWidth * 0.96, 1100);
-    const cssH = Math.min(window.innerHeight * 0.78, 700);
-    // preserve aspect ratio
-    const ratio = LOGICAL_W/LOGICAL_H;
-    let w = cssW, h = cssH;
-    if(w/h > ratio) w = Math.round(h * ratio); else h = Math.round(w / ratio);
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    canvas.width = LOGICAL_W;
-    canvas.height = LOGICAL_H;
-    ctx.setTransform(1,0,0,1,0,0);
-  }
-  window.addEventListener('resize', fitCanvas);
-  fitCanvas();
+  // ---------- sample data (empty at start) ----------
+  let items = [
+    // example structure:
+    // { id:'uuid', title:'Mapa X', desc:'...', tags:['cidade','rp'], link:'https://www.mediafire.com/..', created:timestamp, views:0 }
+  ];
 
-  // UI elements
-  const menuOverlay = document.getElementById('menuOverlay');
-  const mainMenu = document.getElementById('mainMenu');
-  const settingsPanel = document.getElementById('settingsPanel');
-  const howPanel = document.getElementById('howPanel');
-  const startBtn = document.getElementById('startBtn');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const howBtn = document.getElementById('howBtn');
-  const howBack = document.getElementById('howBack');
-  const settingsBack = document.getElementById('backFromSettings');
-  const applySettings = document.getElementById('applySettings');
+  // ---------- helpers ----------
+  function uid(){ return 'm_'+Math.random().toString(36).slice(2,9); }
+  function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); render(); }
+  function load(){ try{ const j = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); if(Array.isArray(j)) items = j; }catch(e){ items=[] } }
+  function formatDate(ts){ const d=new Date(ts||Date.now()); return d.toLocaleString(); }
 
-  const controlSelect = document.getElementById('controlSelect');
-  const difficultySelect = document.getElementById('difficultySelect');
-  const matchTime = document.getElementById('matchTime');
-  const soundToggle = document.getElementById('soundToggle');
+  // ---------- DOM refs ----------
+  const listEl = document.getElementById('list');
+  const searchInput = document.getElementById('searchInput');
+  const filterTag = document.getElementById('filterTag');
+  const sortBy = document.getElementById('sortBy');
+  const clearFilter = document.getElementById('clearFilter');
 
-  const scoreBlueEl = document.getElementById('scoreBlue');
-  const scoreRedEl = document.getElementById('scoreRed');
-  const timeLeftEl = document.getElementById('timeLeft');
+  const modal = document.getElementById('modal');
+  const openAdmin = document.getElementById('openAdmin');
+  const closeModal = document.getElementById('closeModal');
+  const mTitle = document.getElementById('mTitle');
+  const mDesc = document.getElementById('mDesc');
+  const mTags = document.getElementById('mTags');
+  const mLink = document.getElementById('mLink');
+  const saveMapBtn = document.getElementById('saveMap');
+  const deleteMapBtn = document.getElementById('deleteMap');
+  const importArea = document.getElementById('importArea');
+  const doImport = document.getElementById('doImport');
+  const appendImport = document.getElementById('appendImport');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
 
-  // Game state
-  let running = false;
-  let paused = false;
-  let lastTime = 0;
-  let matchSeconds = 180; // default 3 min
-  let elapsed = 0;
-  let blueScore = 0, redScore = 0;
+  let editingId = null;
 
-  // Settings
-  let settings = {
-    control: 'wasd', // wasd | arrows | touch
-    difficulty: 'normal',
-    matchMinutes: 3,
-    sound: true
-  };
+  // ---------- init ----------
+  load(); render(); populateFilterTags();
 
-  // Physics / Field
-  const field = { x:60, y:60, w: LOGICAL_W-120, h: LOGICAL_H-140 };
-  const goalWidth = 220;
-  const goalDepth = 28;
+  // ---------- render ----------
+  function render(){
+    listEl.innerHTML = '';
+    // get filtered list
+    const q = (searchInput.value||'').toLowerCase().trim();
+    const tag = filterTag.value;
+    let arr = items.slice();
 
-  // Entities
-  const ball = { x: LOGICAL_W/2, y: LOGICAL_H/2, vx:0, vy:0, r:12, friction: 0.995 };
-  const player = { x: LOGICAL_W*0.3, y: LOGICAL_H/2, r:16, speed:210, sprintMod:1.6, vx:0, vy:0, stamina:1 };
-  const opponent = { x: LOGICAL_W*0.7, y: LOGICAL_H/2, r:16, speed:180, vx:0, vy:0 };
+    // sort
+    if(sortBy.value === 'new') arr.sort((a,b)=> (b.created||0)-(a.created||0));
+    else if(sortBy.value === 'name') arr.sort((a,b)=> a.title.localeCompare(b.title));
+    else if(sortBy.value === 'popular') arr.sort((a,b)=> (b.views||0)-(a.views||0));
 
-  // Input
-  const keys = {};
-  let lastPointer = {x:0,y:0,down:false};
-  canvas.addEventListener('pointerdown', e => { lastPointer.down=true; lastPointer.x = eOffsetX(e); lastPointer.y = eOffsetY(e); });
-  window.addEventListener('pointerup', e => { lastPointer.down=false; });
-  canvas.addEventListener('pointermove', e => { lastPointer.x = eOffsetX(e); lastPointer.y = eOffsetY(e); });
-
-  window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; if(e.key===' '){ e.preventDefault(); }});
-  window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-
-  // Sound (simple beeps using WebAudio)
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function beep(freq, duration=0.08, vol=0.15){
-    if(!settings.sound) return;
-    try{
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.frequency.value = freq;
-      o.type = 'sine';
-      g.gain.value = vol;
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      g.gain.setValueAtTime(vol, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-      o.stop(audioCtx.currentTime + duration + 0.02);
-    }catch(e){}
-  }
-
-  // Helpers for pointer offset to logical canvas coordinates
-  function eOffsetX(e){
-    const rect = canvas.getBoundingClientRect();
-    const sx = canvas.width / rect.width;
-    return (e.clientX - rect.left) * sx;
-  }
-  function eOffsetY(e){
-    const rect = canvas.getBoundingClientRect();
-    const sy = canvas.height / rect.height;
-    return (e.clientY - rect.top) * sy;
-  }
-
-  // Start / menus
-  function showPanel(name){
-    mainMenu.style.display = (name==='main') ? 'block' : 'none';
-    settingsPanel.style.display = (name==='settings') ? 'block' : 'none';
-    howPanel.style.display = (name==='how') ? 'block' : 'none';
-    menuOverlay.style.pointerEvents = 'auto';
-  }
-  function hidePanels(){
-    mainMenu.style.display = 'none';
-    settingsPanel.style.display = 'none';
-    howPanel.style.display = 'none';
-    menuOverlay.style.pointerEvents = 'none';
-  }
-
-  startBtn.addEventListener('click', () => {
-    applySettingsToGame(); // use current settings before start
-    resetMatch();
-    hidePanels();
-    running = true;
-    paused = false;
-    lastTime = performance.now();
-    requestAnimationFrame(loop);
-  });
-  settingsBtn.addEventListener('click', ()=> showPanel('settings'));
-  howBtn.addEventListener('click', ()=> showPanel('how'));
-  howBack.addEventListener('click', ()=> showPanel('main'));
-  settingsBack.addEventListener('click', ()=> showPanel('main'));
-  applySettings.addEventListener('click', ()=> {
-    applySettingsToGame();
-    showPanel('main');
-  });
-
-  // initialize menu
-  showPanel('main');
-
-  // Apply settings from UI controls to settings object
-  function applySettingsToGame(){
-    settings.control = controlSelect.value;
-    settings.difficulty = difficultySelect.value;
-    settings.matchMinutes = parseInt(matchTime.value,10);
-    settings.sound = soundToggle.checked;
-    matchSeconds = settings.matchMinutes * 60;
-    // adjust opponent speed by difficulty
-    if(settings.difficulty === 'easy') opponent.speed = 150;
-    else if(settings.difficulty === 'normal') opponent.speed = 190;
-    else opponent.speed = 230;
-  }
-
-  // Match management
-  function resetMatch(){
-    blueScore = 0; redScore = 0;
-    resetPositions();
-    elapsed = 0;
-    updateHUD();
-  }
-  function resetPositions(){
-    ball.x = LOGICAL_W/2; ball.y = LOGICAL_H/2; ball.vx=0; ball.vy=0;
-    player.x = field.x + field.w*0.25; player.y = LOGICAL_H/2; player.vx=0; player.vy=0;
-    opponent.x = field.x + field.w*0.75; opponent.y = LOGICAL_H/2; opponent.vx=0; opponent.vy=0;
-  }
-
-  // Game loop
-  function loop(t){
-    if(!running) return;
-    const dt = Math.min(0.033, (t - lastTime)/1000);
-    lastTime = t;
-    if(!paused){
-      update(dt);
+    // filter by tag
+    if(tag){
+      arr = arr.filter(it => (it.tags||[]).includes(tag));
     }
-    draw();
-    requestAnimationFrame(loop);
-  }
+    // search
+    if(q){
+      arr = arr.filter(it => {
+        return (it.title||'').toLowerCase().includes(q) ||
+               (it.desc||'').toLowerCase().includes(q) ||
+               (it.tags||[]).join(' ').toLowerCase().includes(q);
+      });
+    }
 
-  // Update logic
-  function update(dt){
-    elapsed += dt;
-    // Update time; end match when elapsed >= matchSeconds
-    const left = Math.max(0, Math.floor((matchSeconds - elapsed)));
-    if(left <= 0){
-      // match end
-      running = false;
-      showResult();
+    if(arr.length === 0){
+      listEl.innerHTML = '<div style="grid-column:1/-1;color:var(--muted);padding:20px;text-align:center">Nenhum mapa encontrado — adicione no Admin.</div>';
       return;
     }
-    // player input
-    let mvx=0, mvy=0, sprint=false;
-    if(settings.control === 'wasd'){
-      if(keys['w']) mvy -=1;
-      if(keys['s']) mvy +=1;
-      if(keys['a']) mvx -=1;
-      if(keys['d']) mvx +=1;
-    } else if(settings.control === 'arrows'){
-      if(keys['arrowup']) mvy -=1;
-      if(keys['arrowdown']) mvy +=1;
-      if(keys['arrowleft']) mvx -=1;
-      if(keys['arrowright']) mvx +=1;
-    }
-    sprint = keys['shift'];
 
-    // touch control: move toward pointer if pressed
-    if(settings.control === 'touch' && lastPointer.down){
-      const dx = lastPointer.x - player.x;
-      const dy = lastPointer.y - player.y;
-      const L = Math.hypot(dx,dy) || 1;
-      mvx = dx/L; mvy = dy/L;
-    }
+    arr.forEach(it => {
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `
+        <h3>${escapeHtml(it.title)}</h3>
+        <div class="meta small">Adicionado: ${formatDate(it.created)} • ${it.views||0} downloads (estimado)</div>
+        <div class="small">${escapeHtml(it.desc||'Sem descrição')}</div>
+        <div class="tags">${(it.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="row">
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="download" data-id="${it.id}">DOWNLOAD</button>
+            <button class="secondary copy" data-id="${it.id}">Copiar link</button>
+          </div>
+          <div style="font-size:13px;color:var(--muted)"><button class="secondary edit" data-id="${it.id}">Editar</button></div>
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
 
-    // normalize movement and apply
-    if(mvx !== 0 || mvy !== 0){
-      const L = Math.hypot(mvx,mvy) || 1;
-      mvx /= L; mvy /= L;
-      const sp = player.speed * (sprint ? player.sprintMod : 1);
-      player.vx = mvx * sp; player.vy = mvy * sp;
+    // attach events
+    listEl.querySelectorAll('button.download').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const id = e.currentTarget.dataset.id;
+        const it = items.find(x=>x.id===id); if(!it) return;
+        // increment views (estimativa)
+        it.views = (it.views||0) + 1;
+        save();
+        window.open(it.link, '_blank');
+      });
+    });
+    listEl.querySelectorAll('button.copy').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const id = e.currentTarget.dataset.id; const it = items.find(x=>x.id===id); if(!it) return;
+        navigator.clipboard?.writeText(it.link).then(()=> alert('Link copiado para área de transferência.'));
+      });
+    });
+    listEl.querySelectorAll('button.edit').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const id = e.currentTarget.dataset.id; const it = items.find(x=>x.id===id); if(!it) return;
+        openModalForEdit(it);
+      });
+    });
+
+    populateFilterTags();
+  }
+
+  function populateFilterTags(){
+    const set = new Set();
+    items.forEach(it => (it.tags||[]).forEach(t => t && set.add(t)));
+    const arr = Array.from(set).sort();
+    filterTag.innerHTML = '<option value="">Filtrar por tag</option>' + arr.map(t => `<option value="${escapeHtmlAttr(t)}">${escapeHtml(t)}</option>`).join('');
+  }
+
+  // ---------- modal / admin ----------
+  openAdmin.addEventListener('click', ()=> { openModalForNew(); });
+  closeModal.addEventListener('click', ()=> { modal.style.display='none'; clearModal(); });
+
+  function openModalForNew(){
+    editingId = null;
+    deleteMapBtn.style.display='none';
+    mTitle.value=''; mDesc.value=''; mTags.value=''; mLink.value='';
+    modal.style.display='flex';
+  }
+  function openModalForEdit(it){
+    editingId = it.id;
+    deleteMapBtn.style.display='inline-block';
+    mTitle.value = it.title || '';
+    mDesc.value = it.desc || '';
+    mTags.value = (it.tags||[]).join(',');
+    mLink.value = it.link || '';
+    modal.style.display='flex';
+  }
+
+  saveMapBtn.addEventListener('click', ()=>{
+    const title = mTitle.value.trim();
+    const desc = mDesc.value.trim();
+    const link = mLink.value.trim();
+    const tags = mTags.value.split(',').map(x=>x.trim()).filter(Boolean);
+    if(!title || !link){ alert('Título e link são obrigatórios.'); return; }
+    if(!isMediafireLink(link)){ if(!confirm('Link não parece ser MediaFire. Continuar?')) return; }
+
+    if(editingId){
+      const it = items.find(x=>x.id===editingId);
+      if(it){
+        it.title = title; it.desc = desc; it.tags = tags; it.link = normalizeLink(link);
+        save();
+      }
     } else {
-      // friction
-      player.vx *= 0.82; player.vy *= 0.82;
-      if(Math.abs(player.vx) < 1) player.vx = 0;
-      if(Math.abs(player.vy) < 1) player.vy = 0;
+      items.unshift({ id: uid(), title, desc, tags, link:normalizeLink(link), created:Date.now(), views:0 });
+      save();
     }
-    player.x += player.vx * dt;
-    player.y += player.vy * dt;
-    clampToField(player);
-
-    // simple opponent AI: chase ball but prefer own half; difficulty affects reaction
-    aiOpponent(dt);
-
-    // ball physics
-    ball.x += ball.vx * dt;
-    ball.y += ball.vy * dt;
-    // friction
-    ball.vx *= Math.pow(ball.friction, dt*60);
-    ball.vy *= Math.pow(ball.friction, dt*60);
-
-    // collisions: player-ball and opponent-ball
-    resolveKick(player);
-    resolveKick(opponent);
-
-    // collisions with field bounds and goals
-    handleFieldCollisions();
-
-    // check goals
-    checkGoals();
-
-    // update HUD
-    updateHUD();
-  }
-
-  function aiOpponent(dt){
-    // compute desire to approach ball; difficulty modifies how precise
-    const dx = ball.x - opponent.x;
-    const dy = ball.y - opponent.y;
-    const dist = Math.hypot(dx,dy) || 1;
-    // reaction speed
-    let react = 0.9;
-    if(settings.difficulty === 'easy') react = 0.6;
-    if(settings.difficulty === 'hard') react = 1.1;
-    // target position slightly biased to defend own goal
-    const defendBiasX = field.x + field.w*0.85; // opponent is right side defending right goal
-    const targetX = ball.x * 0.7 + defendBiasX * 0.3;
-    const targetY = ball.y;
-    const tx = targetX - opponent.x;
-    const ty = targetY - opponent.y;
-    const L = Math.hypot(tx,ty) || 1;
-    const nx = tx/L; const ny = ty/L;
-    const noise = (Math.random()-0.5) * 0.4; // slight randomness
-    opponent.vx = (nx + noise) * opponent.speed * react;
-    opponent.vy = (ny + noise) * opponent.speed * react;
-    opponent.x += opponent.vx * dt;
-    opponent.y += opponent.vy * dt;
-    clampToField(opponent);
-    // if near ball, attempt a shot-ish toward player's goal
-    if(dist < 100){
-      // small chance to kick forward
-      if(Math.random() < 0.02 * (settings.difficulty === 'hard' ? 1.6 : 1)){
-        // kick toward left goal
-        const goalX = field.x - 40; const goalY = LOGICAL_H/2 + (Math.random()-0.5)*80;
-        const kdx = goalX - ball.x; const kdy = goalY - ball.y;
-        const KL = Math.hypot(kdx,kdy) || 1;
-        ball.vx = (kdx/KL) * 520;
-        ball.vy = (kdy/KL) * 520;
-        beep(180,0.06,0.12);
-      }
-    }
-  }
-
-  function clampToField(e){
-    e.x = Math.max(field.x + e.r, Math.min(field.x + field.w - e.r, e.x));
-    e.y = Math.max(field.y + e.r, Math.min(field.y + field.h - e.r, e.y));
-  }
-
-  function resolveKick(entity){
-    const dx = ball.x - entity.x;
-    const dy = ball.y - entity.y;
-    const d = Math.hypot(dx,dy) || 1;
-    if(d < ball.r + entity.r){
-      // transfer velocity / kick
-      const nx = dx / d; const ny = dy / d;
-      // if player actively moving into ball (high velocity) it's a stronger kick
-      const power = Math.min(1.6, 0.8 + (Math.hypot(entity.vx,entity.vy) / 300));
-      ball.vx = nx * 420 * power + (entity.vx * 0.2);
-      ball.vy = ny * 420 * power + (entity.vy * 0.2);
-      // slight reposition to avoid sticking
-      ball.x = entity.x + nx * (ball.r + entity.r + 0.5);
-      ball.y = entity.y + ny * (ball.r + entity.r + 0.5);
-      beep(520, 0.04, 0.08);
-    }
-  }
-
-  function handleFieldCollisions(){
-    // left and right walls except goal area
-    // top/bottom walls
-    if(ball.y - ball.r < field.y){ ball.y = field.y + ball.r; ball.vy = -ball.vy * 0.6; }
-    if(ball.y + ball.r > field.y + field.h){ ball.y = field.y + field.h - ball.r; ball.vy = -ball.vy * 0.6; }
-
-    // left wall but allow goal opening
-    const goalTop = LOGICAL_H/2 - goalWidth/2;
-    const goalBottom = LOGICAL_H/2 + goalWidth/2;
-    // left side
-    if(ball.x - ball.r < field.x){
-      // if within goal vertical zone and x<goalDepth, it's a goal
-      if(ball.y > goalTop && ball.y < goalBottom && ball.x < field.x - goalDepth){
-        // right team scored (red) — because left goal conceded
-        redScore++;
-        beep(120,0.18,0.22);
-        resetAfterGoal('red');
-      } else {
-        ball.x = field.x + ball.r; ball.vx = -ball.vx * 0.6;
-      }
-    }
-    // right side
-    if(ball.x + ball.r > field.x + field.w){
-      if(ball.y > goalTop && ball.y < goalBottom && ball.x > field.x + field.w + goalDepth){
-        // blue scored
-        blueScore++;
-        beep(840,0.18,0.22);
-        resetAfterGoal('blue');
-      } else {
-        ball.x = field.x + field.w - ball.r; ball.vx = -ball.vx * 0.6;
-      }
-    }
-  }
-
-  function resetAfterGoal(which){
-    // freeze positions briefly then reset ball
-    resetPositions();
-    elapsed = Math.max(0, elapsed - 0.5); // tiny rewind so game flow continues
-    // small flash / notification (using beep already)
-  }
-
-  function checkGoals(){
-    // handled in handleFieldCollisions
-  }
-
-  // HUD update
-  function updateHUD(){
-    scoreBlueEl.textContent = blueScore;
-    scoreRedEl.textContent = redScore;
-    const left = Math.max(0, Math.floor(matchSeconds - elapsed));
-    const mm = String(Math.floor(left/60)).padStart(2,'0');
-    const ss = String(left%60).padStart(2,'0');
-    timeLeftEl.textContent = `${mm}:${ss}`;
-  }
-
-  function showResult(){
-    // show simple overlay with result, allow restart or back to menu
-    running = false;
-    paused = false;
-    const winner = blueScore === redScore ? 'EMPATE' : (blueScore > redScore ? 'Time Azul venceu!' : 'Time Vermelho venceu!');
-    // show a quick panel on top
-    const panel = document.createElement('div');
-    panel.className = 'panel';
-    panel.style.pointerEvents = 'auto';
-    panel.style.textAlign = 'center';
-    panel.innerHTML = `<h1>FIM DE PARTIDA</h1>
-      <div class="muted" style="margin:8px 0;">Resultado: <strong>${blueScore} — ${redScore}</strong></div>
-      <div class="muted" style="margin:6px 0 12px;"><strong>${winner}</strong></div>
-      <div class="row"><button class="btn" id="replayBtn">REJOGAR</button><button class="btn secondary" id="menuBtn">VOLTAR AO MENU</button></div>`;
-    // attach on top of canvas
-    panel.style.position = 'absolute';
-    panel.style.left = '50%';
-    panel.style.top = '50%';
-    panel.style.transform = 'translate(-50%,-50%)';
-    panel.style.zIndex = 9999;
-    document.getElementById('container').appendChild(panel);
-    document.getElementById('replayBtn').addEventListener('click', () => {
-      document.getElementById('container').removeChild(panel);
-      resetMatch();
-      running = true; lastTime = performance.now(); requestAnimationFrame(loop);
-    });
-    document.getElementById('menuBtn').addEventListener('click', () => {
-      document.getElementById('container').removeChild(panel);
-      showPanel('main');
-    });
-  }
-
-  // Draw everything
-  function draw(){
-    // clear
-    ctx.clearRect(0,0,LOGICAL_W,LOGICAL_H);
-
-    // draw field background
-    drawField();
-
-    // draw goals
-    drawGoals();
-
-    // draw ball
-    ctx.beginPath();
-    ctx.fillStyle = '#fff';
-    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
-    ctx.fill();
-    // ball pattern (simple)
-    ctx.beginPath(); ctx.fillStyle='#111'; ctx.arc(ball.x-4, ball.y-4, 3, 0, Math.PI*2); ctx.fill();
-
-    // draw players
-    drawPlayer(player, '#12b4ff', 'A'); // blue
-    drawPlayer(opponent, '#ff5a5a', 'B'); // red
-
-    // scoreboard / branding
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.fillRect(0,0,LOGICAL_W,42);
-    ctx.fillStyle = '#fff'; ctx.font = '20px system-ui'; ctx.textBaseline='middle';
-    ctx.fillText('FOTBOLLL BR', 12, 21);
-  }
-
-  function drawField(){
-    // green field
-    ctx.fillStyle = '#0a6a2d';
-    ctx.fillRect(field.x, field.y, field.w, field.h);
-    // lines
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
-    ctx.strokeRect(field.x, field.y, field.w, field.h);
-    // center line and circle
-    ctx.beginPath();
-    ctx.moveTo(field.x + field.w/2, field.y);
-    ctx.lineTo(field.x + field.w/2, field.y + field.h);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.lineWidth = 2;
-    ctx.arc(field.x + field.w/2, field.y + field.h/2, 80, 0, Math.PI*2);
-    ctx.stroke();
-
-    // penalty boxes
-    ctx.strokeRect(field.x, field.y + field.h/2 - 160, 120, 320);
-    ctx.strokeRect(field.x + field.w - 120, field.y + field.h/2 - 160, 120, 320);
-  }
-
-  function drawGoals(){
-    const goalTop = LOGICAL_H/2 - goalWidth/2;
-    const goalBottom = LOGICAL_H/2 + goalWidth/2;
-    // left goal area (visual)
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    ctx.fillRect(field.x - goalDepth - 6, goalTop, goalDepth + 6, goalWidth);
-    // right
-    ctx.fillRect(field.x + field.w + 6, goalTop, goalDepth + 6, goalWidth);
-    // nets lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
-    // simple posts
-    ctx.strokeRect(field.x - 6, goalTop, 6, goalWidth);
-    ctx.strokeRect(field.x + field.w, goalTop, 6, goalWidth);
-  }
-
-  function drawPlayer(p, color, label){
-    // shadow
-    ctx.beginPath();
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.ellipse(p.x + 4, p.y + p.r + 6, p.r*0.9, p.r*0.45, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    // body
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    ctx.fill();
-    // number/label
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px system-ui';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, p.x, p.y);
-  }
-
-  // Keyboard shortcuts for pause/restart
-  window.addEventListener('keydown', e => {
-    if(e.key.toLowerCase() === 'p'){ paused = !paused; if(paused) beep(220,0.06); else beep(440,0.06); }
-    if(e.key.toLowerCase() === 'r'){ resetMatch(); beep(620,0.06); }
+    modal.style.display='none'; clearModal();
   });
 
-  // Touch to kick: if player taps near ball, do a kick towards pointer
-  canvas.addEventListener('pointerdown', (e) => {
-    const mx = eOffsetX(e), my = eOffsetY(e);
-    const dx = mx - ball.x, dy = my - ball.y;
-    if(Math.hypot(dx,dy) < 80){
-      // kick ball toward pointer
-      const KL = Math.hypot(dx,dy) || 1;
-      ball.vx = (dx/KL) * 600;
-      ball.vy = (dy/KL) * 600;
-      beep(720,0.06,0.12);
+  deleteMapBtn.addEventListener('click', ()=>{
+    if(!editingId) return;
+    if(confirm('Excluir este mapa?')) {
+      items = items.filter(x=>x.id!==editingId); save(); modal.style.display='none'; clearModal();
     }
   });
 
-  // Save/apply initial UI values
-  controlSelect.value = settings.control;
-  difficultySelect.value = settings.difficulty;
-  matchTime.value = settings.matchMinutes;
-  soundToggle.checked = settings.sound;
+  function clearModal(){ editingId=null; mTitle.value=''; mDesc.value=''; mTags.value=''; mLink.value=''; importArea.value=''; }
 
-  // start paused (menu visible)
-  updateHUD();
-  draw();
+  // ---------- import / export ----------
+  exportBtn.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(items, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'mapas_lac_export.json'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
 
-  // --- end of IIFE ---
+  importBtn.addEventListener('click', ()=> {
+    // open modal import area
+    modal.style.display='flex';
+  });
+
+  doImport.addEventListener('click', ()=> {
+    try{
+      const j = JSON.parse(importArea.value);
+      if(!Array.isArray(j)) throw 'JSON deve ser um array';
+      // map objects to our shape
+      items = j.map(it => ({
+        id: it.id || uid(),
+        title: it.title || 'Sem título',
+        desc: it.desc || '',
+        tags: (it.tags||[]).map(String),
+        link: normalizeLink(it.link||''),
+        created: it.created || Date.now(),
+        views: it.views || 0
+      }));
+      save(); modal.style.display='none'; clearModal();
+    }catch(e){ alert('Erro ao importar JSON: ' + e); }
+  });
+
+  appendImport.addEventListener('click', ()=> {
+    try{
+      const j = JSON.parse(importArea.value);
+      if(!Array.isArray(j)) throw 'JSON deve ser um array';
+      const added = j.map(it => ({
+        id: it.id || uid(),
+        title: it.title || 'Sem título',
+        desc: it.desc || '',
+        tags: (it.tags||[]).map(String),
+        link: normalizeLink(it.link||''),
+        created: it.created || Date.now(),
+        views: it.views || 0
+      }));
+      items = items.concat(added); save(); modal.style.display='none'; clearModal();
+    }catch(e){ alert('Erro ao importar JSON: ' + e); }
+  });
+
+  // ---------- search / filters ----------
+  searchInput.addEventListener('input', ()=> render());
+  filterTag.addEventListener('change', ()=> render());
+  sortBy.addEventListener('change', ()=> render());
+  clearFilter.addEventListener('click', ()=> { searchInput.value=''; filterTag.value=''; sortBy.value='new'; render(); });
+
+  // ---------- utilities ----------
+  function isMediafireLink(u){
+    if(!u) return false;
+    try{ const url = new URL(u); return url.hostname.includes('mediafire.com'); }catch(e){ return false; }
+  }
+  function normalizeLink(u){
+    // if mediafire file page has redirect link, keep as-is. No heavy checks.
+    return u.trim();
+  }
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function escapeHtmlAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+  // ---------- initial sample (only if empty) ----------
+  if(items.length === 0){
+    items.push({
+      id: uid(),
+      title: 'Exemplo — Centro RP',
+      desc: 'Mapa de exemplo. Substitua pelo seu link do MediaFire.',
+      tags:['centro','rp'],
+      link: 'https://www.mediafire.com/example_link',
+      created: Date.now(),
+      views: 0
+    });
+    save();
+  }
+
+  // ---------- click outside modal to close ----------
+  modal.addEventListener('click', e => { if(e.target === modal) { modal.style.display='none'; clearModal(); } });
+
+  // ---------- small UX: open edit from URL param ?edit=id ----------
+  const params = new URLSearchParams(location.search);
+  if(params.get('edit')){
+    const id = params.get('edit');
+    const it = items.find(x=>x.id===id);
+    if(it) openModalForEdit(it);
+  }
+
+  // ---------- end ----------
 })();
 </script>
 </body>
